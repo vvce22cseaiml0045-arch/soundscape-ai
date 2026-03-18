@@ -1,19 +1,15 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { GoogleMap, Polyline, Marker, useJsApiLoader } from "@react-google-maps/api";
+import React, { useState, useEffect, useCallback, useRef } from "react";
+import { MapContainer, TileLayer, Polyline, Marker, Popup, useMapEvents } from "react-leaflet";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
 import { Badge } from "./ui/badge";
 import { Route as RouteIcon, Navigation } from "lucide-react";
 import { useToast } from "../hooks/use-toast";
 
-const containerStyle = {
-  width: "100%",
-  height: "calc(100vh - 200px)",
-  borderRadius: "12px",
-};
+const MAPBOX_TOKEN = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN;
 
-const libraries = [];
-
-// Fallback coordinate if Local Geolocation fails (Mysuru)
-const DEFAULT_CENTER = { lat: 12.2958, lng: 76.6394 }; 
+// Fallback coordinate if Geolocation fails (Mysuru)
+const DEFAULT_CENTER = [12.2958, 76.6394];
 
 const ROUTE_COLOR = {
   Low: "#10b981",     // emerald
@@ -28,53 +24,56 @@ const levelVariants = {
 };
 
 const levelMessages = {
-  Low: "Normal route – safest noise level on this direct path.",
-  Medium: "Moderate noise – picked an alternative detour to avoid noise.", 
-  High: "High noise – actively avoiding noisy zones by taking a wider detour."
+  Low: "Fastest route – optimal path with standard noise levels.",
+  Medium: "Alternative route – moderate noise avoidance.",
+  High: "Deep detour – maximum noise avoidance through quieter zones."
 };
 
-// Function to generate simulated alternative routes without an API limit
-const getDynamicRoutes = (start, end) => {
-  if (!start || !end) return null;
+// Fix Leaflet's default marker icon issue with CRA/webpack
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png",
+  iconUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png",
+  shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
+});
 
-  const lat1 = start.lat;
-  const lng1 = start.lng;
-  const lat2 = end.lat;
-  const lng2 = end.lng;
+// Custom "You" marker
+const youIcon = L.divIcon({
+  className: "",
+  html: `<div style="display:flex;flex-direction:column;align-items:center">
+           <div style="background:#fff;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:700;box-shadow:0 1px 3px rgba(0,0,0,.2);margin-bottom:2px">YOU</div>
+           <div style="width:14px;height:14px;background:#10b981;border-radius:50%;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.3)"></div>
+         </div>`,
+  iconSize: [40, 30],
+  iconAnchor: [20, 30],
+});
 
-  const dx = lat2 - lat1;
-  const dy = lng2 - lng1;
+// Custom destination marker
+const destIcon = L.divIcon({
+  className: "",
+  html: `<div style="width:18px;height:18px;background:#ef4444;border-radius:50%;border:2px solid #fff;box-shadow:0 1px 6px rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center">
+           <div style="width:6px;height:6px;background:#fff;border-radius:50%"></div>
+         </div>`,
+  iconSize: [18, 18],
+  iconAnchor: [9, 9],
+});
 
-  const midLat = (lat1 + lat2) / 2;
-  const midLng = (lng1 + lng2) / 2;
-
-  // Perpendicular vector for detour plotting
-  const perpLat = -dy;
-  const perpLng = dx;
-
-  return {
-    Low: [start, end], // Straight line
-    Medium: [
-      start,
-      { lat: midLat + perpLat * 0.15, lng: midLng + perpLng * 0.15 }, // Slight curve detour
-      end
-    ],
-    High: [
-      start,
-      { lat: midLat + perpLat * 0.35, lng: midLng + perpLng * 0.35 }, // Wide curve detour
-      end
-    ]
-  };
-};
+// Component to handle map clicks
+function MapClickHandler({ onClick }) {
+  useMapEvents({
+    click(e) {
+      onClick(e);
+    },
+  });
+  return null;
+}
 
 function NoiseRouteMap({ noiseLevel = "Low", hasAnalysis = true }) {
-  const { isLoaded } = useJsApiLoader({
-    googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_KEY,
-    libraries,
-  });
-
   const [currentLocation, setCurrentLocation] = useState(null);
+  const [destination, setDestination] = useState(null);
+  const [routes, setRoutes] = useState(null);
   const { toast } = useToast();
+  const mapRef = useRef(null);
 
   useEffect(() => {
     if (!hasAnalysis) {
@@ -84,18 +83,13 @@ function NoiseRouteMap({ noiseLevel = "Low", hasAnalysis = true }) {
       });
     }
   }, [hasAnalysis, toast]);
-  const [destination, setDestination] = useState(null);
-  const [dynamicRoutes, setDynamicRoutes] = useState(null);
-  
+
   // 1. Get User's Present Location on Mount
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          setCurrentLocation({
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-          });
+          setCurrentLocation([position.coords.latitude, position.coords.longitude]);
         },
         () => {
           console.warn("Geolocation permission denied or failed. Using default center.");
@@ -107,16 +101,48 @@ function NoiseRouteMap({ noiseLevel = "Low", hasAnalysis = true }) {
     }
   }, []);
 
-  // 2. Generate Map Lines whenever destination is set
+  // 2. Fetch Routes from Mapbox Directions API
+  const fetchRoutes = useCallback(async (start, end) => {
+    if (!start || !end || !MAPBOX_TOKEN) return;
+
+    try {
+      const query = await fetch(
+        `https://api.mapbox.com/directions/v5/mapbox/driving/${start[1]},${start[0]};${end[1]},${end[0]}?alternatives=true&geometries=geojson&access_token=${MAPBOX_TOKEN}`,
+        { method: 'GET' }
+      );
+      const json = await query.json();
+      if (json.code !== 'Ok') {
+        console.error('Mapbox Directions API error:', json.message);
+        toast({
+          title: "Route Fetch Failed",
+          description: json.message || "Could not fetch route from Mapbox.",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      const fetchedRoutes = {
+        Low: json.routes[0],
+        Medium: json.routes[1] || json.routes[0],
+        High: json.routes[2] || json.routes[1] || json.routes[0]
+      };
+
+      setRoutes(fetchedRoutes);
+    } catch (error) {
+      console.error('Failed to fetch routes:', error);
+    }
+  }, [toast]);
+
+  // 3. Update routes when destination changes
   useEffect(() => {
     if (currentLocation && destination) {
-      setDynamicRoutes(getDynamicRoutes(currentLocation, destination));
+      fetchRoutes(currentLocation, destination);
     } else {
-      setDynamicRoutes(null);
+      setRoutes(null);
     }
-  }, [currentLocation, destination]);
+  }, [currentLocation, destination, fetchRoutes]);
 
-  // Handle click on Map to set dynamic destination
+  // Handle map click
   const onMapClick = useCallback((e) => {
     if (!hasAnalysis) {
       toast({
@@ -126,25 +152,29 @@ function NoiseRouteMap({ noiseLevel = "Low", hasAnalysis = true }) {
       });
       return;
     }
-    
-    setDestination({
-      lat: e.latLng.lat(),
-      lng: e.latLng.lng(),
-    });
+
+    const newDest = [e.latlng.lat, e.latlng.lng];
+    setDestination(newDest);
   }, [hasAnalysis, toast]);
 
-  if (!isLoaded) {
+  // Convert GeoJSON coordinates [lng, lat] to Leaflet [lat, lng]
+  const getRoutePath = () => {
+    if (!routes || !routes[noiseLevel]) return [];
+    const coords = routes[noiseLevel].geometry.coordinates;
+    return coords.map(([lng, lat]) => [lat, lng]);
+  };
+
+  const routePath = getRoutePath();
+
+  if (!currentLocation) {
     return (
       <div className="bg-white dark:bg-slate-800 shadow-lg border border-gray-200 dark:border-slate-700 rounded-lg animate-pulse">
         <div className="h-[400px] flex items-center justify-center">
-            <p className="text-gray-500 font-medium">Loading Google Maps API...</p>
+          <p className="text-gray-500 font-medium">Locating you on the map...</p>
         </div>
       </div>
     );
   }
-
-  // Get current active simulated route based on noise level
-  const currentPath = dynamicRoutes ? (dynamicRoutes[noiseLevel] || dynamicRoutes.Low) : [];
 
   return (
     <div className="bg-white dark:bg-slate-800 shadow-lg border border-gray-200 dark:border-slate-700 rounded-lg transition-all">
@@ -158,46 +188,47 @@ function NoiseRouteMap({ noiseLevel = "Low", hasAnalysis = true }) {
           </span>
         )}
       </div>
-      
-      <div className="p-4 sm:p-6 space-y-4 bg-gray-50/30 dark:bg-slate-800 rounded-b-lg relative">
-        <GoogleMap
-          mapContainerStyle={containerStyle}
-          center={currentLocation || DEFAULT_CENTER}
-          zoom={14}
-          onClick={onMapClick}
-          options={{
-            streetViewControl: false,
-            mapTypeControl: false,
-            fullscreenControl: false,
-          }}
-        >
-          {/* User's Current Location */}
-          {currentLocation && (
-             <Marker position={currentLocation} label="You" />
-          )}
-          
-          {/* Tapped Destination Location */}
-          {destination && (
-             <Marker 
-               key={`dest-${destination.lat}-${destination.lng}`} 
-               position={destination} 
-             />
-          )}
 
-          {/* Render mathematical custom route avoiding limits */}
-          {dynamicRoutes && (
-            <Polyline
-              key={`route-${destination.lat}-${destination.lng}`}
-              path={currentPath}
-              options={{
-                strokeColor: ROUTE_COLOR[noiseLevel] || ROUTE_COLOR.Low,
-                strokeOpacity: 0.8,
-                strokeWeight: 6,
-                geodesic: true,
-              }}
+      <div className="p-4 sm:p-6 space-y-4 bg-gray-50/30 dark:bg-slate-800 rounded-b-lg relative">
+        <div style={{ width: "100%", height: "calc(100vh - 200px)", borderRadius: "12px", overflow: "hidden" }}>
+          <MapContainer
+            center={currentLocation}
+            zoom={14}
+            style={{ width: "100%", height: "100%" }}
+            ref={mapRef}
+          >
+            <TileLayer
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
-          )}
-        </GoogleMap>
+
+            <MapClickHandler onClick={onMapClick} />
+
+            {/* User's Current Location */}
+            <Marker position={currentLocation} icon={youIcon}>
+              <Popup>Your current location</Popup>
+            </Marker>
+
+            {/* Destination */}
+            {destination && (
+              <Marker position={destination} icon={destIcon}>
+                <Popup>Destination</Popup>
+              </Marker>
+            )}
+
+            {/* Route Polyline */}
+            {routePath.length > 0 && (
+              <Polyline
+                positions={routePath}
+                pathOptions={{
+                  color: ROUTE_COLOR[noiseLevel] || ROUTE_COLOR.Low,
+                  weight: 6,
+                  opacity: 0.8,
+                }}
+              />
+            )}
+          </MapContainer>
+        </div>
 
         {/* Status Indicator */}
         <div className="flex flex-col sm:flex-row items-center justify-between p-4 bg-gray-100 dark:bg-slate-700 rounded-lg border border-gray-200 dark:border-slate-600 gap-3">
@@ -222,11 +253,11 @@ function NoiseRouteMap({ noiseLevel = "Low", hasAnalysis = true }) {
               </>
             )}
           </div>
-          
+
           <div className="flex items-center gap-3 w-full sm:w-auto justify-start sm:justify-end">
             {destination && (
-              <button 
-                onClick={() => setDestination(null)}
+              <button
+                onClick={() => { setDestination(null); setRoutes(null); }}
                 className="text-xs font-semibold px-4 py-2 bg-gray-200 hover:bg-gray-300 dark:bg-slate-600 dark:hover:bg-slate-500 rounded-md text-gray-800 dark:text-gray-100 transition-colors shadow-sm"
               >
                 Clear Route
