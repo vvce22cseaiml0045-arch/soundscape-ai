@@ -177,6 +177,7 @@ function App() {
           isCollapsed={sidebarCollapsed}
           setIsCollapsed={setSidebarCollapsed}
           onLogout={handleLogout}
+          hasAnalysis={!!(result || cnnData)}
         />
 
         {/* Theme Toggle - Top Right Corner */}
@@ -218,6 +219,7 @@ function App() {
                     result?.ml_result?.noise_level ||
                     "Low"
                   }
+                  hasAnalysis={!!(result || cnnData)}
                 />
               </div>
             )}
