@@ -1,0 +1,162 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221.2 83.2% 53.3%;
+    --radius: 0.5rem;
+    
+    /* Custom light theme improvements */
+    --light-bg-subtle: 210 40% 98%;
+    --light-border-subtle: 220 13% 91%;
+    --light-text-muted: 215.4 16.3% 46.9%;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 224.3 76.3% 48%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+      'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+      sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+@layer components {
+  /* Ensure input fields maintain dark theme styling */
+  .dark input {
+    background-color: hsl(var(--input)) !important;
+    color: hsl(var(--foreground)) !important;
+    border-color: hsl(var(--border)) !important;
+  }
+  
+  .dark input::placeholder {
+    color: hsl(var(--muted-foreground)) !important;
+  }
+  
+  /* Handle browser autofill styling in dark mode */
+  .dark input:-webkit-autofill,
+  .dark input:-webkit-autofill:hover,
+  .dark input:-webkit-autofill:focus,
+  .dark input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px hsl(var(--input)) inset !important;
+    -webkit-text-fill-color: hsl(var(--foreground)) !important;
+    caret-color: hsl(var(--foreground)) !important;
+    border-radius: 0.375rem !important;
+    border: 1px solid hsl(var(--border)) !important;
+  }
+  
+  /* Handle Firefox autofill */
+  .dark input:-moz-autofill {
+    background-color: hsl(var(--input)) !important;
+    color: hsl(var(--foreground)) !important;
+    border-radius: 0.375rem !important;
+    border: 1px solid hsl(var(--border)) !important;
+  }
+  
+  /* Completely remove all awkward edges and artifacts */
+  .dark input,
+  .dark input:focus,
+  .dark input:hover,
+  .dark input:active {
+    outline: none !important;
+    box-shadow: none !important;
+    border-radius: 0.375rem !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    appearance: none !important;
+    border: 1px solid hsl(var(--border)) !important;
+    background-clip: padding-box !important;
+  }
+  
+  /* Override any focus ring or outline */
+  .dark input:focus-visible {
+    outline: none !important;
+    box-shadow: 0 0 0 2px rgb(16 185 129 / 0.5) !important;
+    border-color: rgb(16 185 129) !important;
+  }
+  
+  /* Remove any webkit focus ring */
+  .dark input::-webkit-focus-inner {
+    border: 0 !important;
+    outline: none !important;
+  }
+  
+  /* Remove any moz focus ring */
+  .dark input::-moz-focus-inner {
+    border: 0 !important;
+    outline: none !important;
+  }
+  
+  /* Light theme improvements */
+  .light-card-subtle {
+    background-color: hsl(var(--light-bg-subtle));
+    border-color: hsl(var(--light-border-subtle));
+  }
+  
+  /* Better light theme input styling */
+  input {
+    transition: all 0.2s ease-in-out;
+  }
+  
+  input:focus {
+    box-shadow: 0 0 0 2px rgb(16 185 129 / 0.2);
+    border-color: rgb(16 185 129);
+  }
+  
+  /* Light theme card improvements */
+  .card-enhanced {
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  }
+  
+  .dark .card-enhanced {
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.2);
+  }
+}
