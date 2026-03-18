@@ -1,0 +1,12 @@
+fastapi==0.95.2
+uvicorn
+numpy>=2.0.0
+librosa>=0.10.1
+matplotlib
+scikit-learn
+joblib
+tensorflow>=2.15.0
+python-multipart
+pymongo
+typing-extensions>=4.5.0
+pydantic>=1.10.13
