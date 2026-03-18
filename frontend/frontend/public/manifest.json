@@ -1,0 +1,20 @@
+{
+  "short_name": "Soundscape AI",
+  "name": "Soundscape AI - Intelligent Noise Classification",
+  "icons": [
+    {
+      "src": "ssai.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "ssai.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#10b981",
+  "background_color": "#ffffff"
+}
