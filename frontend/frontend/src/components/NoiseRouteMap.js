@@ -68,10 +68,22 @@ function MapClickHandler({ onClick }) {
   return null;
 }
 
+// Component to handle map centering when location changes
+function MapRecenter({ center, isAutoCenter }) {
+  const map = useMapEvents({});
+  useEffect(() => {
+    if (center && isAutoCenter) {
+      map.flyTo(center, map.getZoom());
+    }
+  }, [center, isAutoCenter, map]);
+  return null;
+}
+
 function NoiseRouteMap({ noiseLevel = "Low", hasAnalysis = true }) {
   const [currentLocation, setCurrentLocation] = useState(null);
   const [destination, setDestination] = useState(null);
   const [routes, setRoutes] = useState(null);
+  const [isAutoCenter, setIsAutoCenter] = useState(true);
   const { toast } = useToast();
   const mapRef = useRef(null);
 
@@ -84,22 +96,48 @@ function NoiseRouteMap({ noiseLevel = "Low", hasAnalysis = true }) {
     }
   }, [hasAnalysis, toast]);
 
-  // 1. Get User's Present Location on Mount
+  // 1. Watch User's Present Location
   useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setCurrentLocation([position.coords.latitude, position.coords.longitude]);
-        },
-        () => {
-          console.warn("Geolocation permission denied or failed. Using default center.");
-          setCurrentLocation(DEFAULT_CENTER);
-        }
-      );
-    } else {
+    if (!navigator.geolocation) {
+      console.warn("Geolocation is not supported by this browser.");
       setCurrentLocation(DEFAULT_CENTER);
+      return;
     }
-  }, []);
+
+    const watchId = navigator.geolocation.watchPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        setCurrentLocation([latitude, longitude]);
+      },
+      (error) => {
+        let message = "Could not fetch your location.";
+        if (error.code === error.PERMISSION_DENIED) {
+          message = "Location permission denied. Using default center.";
+        } else if (error.code === error.POSITION_UNAVAILABLE) {
+          message = "Location information is unavailable. Using default center.";
+        } else if (error.code === error.TIMEOUT) {
+          message = "Location request timed out. Using default center.";
+        }
+        
+        console.warn(`Geolocation error (${error.code}): ${error.message}`);
+        toast({
+          title: "Location Error",
+          description: message,
+          variant: "destructive"
+        });
+        
+        // Only set default if we haven't found any location yet
+        setCurrentLocation(prev => prev || DEFAULT_CENTER);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0
+      }
+    );
+
+    return () => navigator.geolocation.clearWatch(watchId);
+  }, [toast]);
 
   // 2. Fetch Routes from Mapbox Directions API
   const fetchRoutes = useCallback(async (start, end) => {
@@ -203,6 +241,7 @@ function NoiseRouteMap({ noiseLevel = "Low", hasAnalysis = true }) {
             />
 
             <MapClickHandler onClick={onMapClick} />
+            <MapRecenter center={currentLocation} isAutoCenter={isAutoCenter} />
 
             {/* User's Current Location */}
             <Marker position={currentLocation} icon={youIcon}>
@@ -228,6 +267,19 @@ function NoiseRouteMap({ noiseLevel = "Low", hasAnalysis = true }) {
               />
             )}
           </MapContainer>
+
+          {/* Recenter Button */}
+          <button
+            onClick={() => {
+              setIsAutoCenter(true);
+              // Small timeout to allow state to trigger flyTo if already true but needs fresh trigger
+              setTimeout(() => setIsAutoCenter(true), 10);
+            }}
+            className="absolute bottom-28 right-8 z-[1000] p-3 bg-white dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-full shadow-lg hover:bg-gray-50 dark:hover:bg-slate-600 transition-all group"
+            title="Recenter Map"
+          >
+            <Navigation className={`w-5 h-5 ${isAutoCenter ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-500 dark:text-gray-400'}`} />
+          </button>
         </div>
 
         {/* Status Indicator */}
@@ -255,6 +307,16 @@ function NoiseRouteMap({ noiseLevel = "Low", hasAnalysis = true }) {
           </div>
 
           <div className="flex items-center gap-3 w-full sm:w-auto justify-start sm:justify-end">
+            <button
+              onClick={() => setIsAutoCenter(!isAutoCenter)}
+              className={`text-xs font-semibold px-4 py-2 rounded-md transition-colors shadow-sm ${
+                isAutoCenter 
+                ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200 dark:bg-emerald-900/40 dark:text-emerald-300' 
+                : 'bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-slate-600 dark:text-gray-200'
+              }`}
+            >
+              {isAutoCenter ? "Auto-Follow ON" : "Auto-Follow OFF"}
+            </button>
             {destination && (
               <button
                 onClick={() => { setDestination(null); setRoutes(null); }}
