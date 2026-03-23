@@ -41,7 +41,7 @@ L.Icon.Default.mergeOptions({
 const youIcon = L.divIcon({
   className: "",
   html: `<div style="display:flex;flex-direction:column;align-items:center">
-           <div style="background:#fff;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:700;box-shadow:0 1px 3px rgba(0,0,0,.2);margin-bottom:2px;color:#000">YOU</div>
+           <div style="background:#fff;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:700;box-shadow:0 1px 3px rgba(0,0,0,.2);margin-bottom:2px">YOU</div>
            <div style="width:14px;height:14px;background:#10b981;border-radius:50%;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.3)"></div>
          </div>`,
   iconSize: [40, 30],
