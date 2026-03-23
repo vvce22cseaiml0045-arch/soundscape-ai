@@ -31,7 +31,7 @@ function App() {
 
     if (isLoggedIn && loginTime) {
       const elapsed = (new Date().getTime() - parseInt(loginTime, 10)) / 1000;
-      if (elapsed >= 600) { // 600 seconds = 10 minutes
+      if (elapsed >= 3600) { // 3600 seconds = 1 hour
         localStorage.removeItem('soundscape_logged_in');
         localStorage.removeItem('soundscape_login_time');
         sessionStorage.removeItem('soundscape_session_active');
@@ -129,7 +129,7 @@ function App() {
         const loginTime = localStorage.getItem('soundscape_login_time');
         if (loginTime) {
           const elapsed = (new Date().getTime() - parseInt(loginTime, 10)) / 1000;
-          if (elapsed >= 600) {
+          if (elapsed >= 3600) {
             setLoggedIn(false);
             localStorage.removeItem('soundscape_logged_in');
             localStorage.removeItem('soundscape_login_time');
