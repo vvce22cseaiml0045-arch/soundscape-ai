@@ -31,6 +31,18 @@ function NoiseGraphs({ stats }) {
   const levelLabels = stats.levels.map(i => i._id);
   const levelCounts = stats.levels.map(i => i.count);
 
+  // Create proper color mapping for noise levels
+  const getLevelColor = (level) => {
+    switch(level.toLowerCase()) {
+      case 'high': return '#ef4444'; // Red
+      case 'medium': return '#f59e0b'; // Yellow
+      case 'low': return '#10b981'; // Green
+      default: return '#6b7280'; // Gray fallback
+    }
+  };
+  
+  const levelColors = levelLabels.map(label => getLevelColor(label));
+
   const typeLabels = stats.types.map(i => formatNoiseType(i._id));
   const typeCounts = stats.types.map(i => i.count);
 
@@ -57,7 +69,7 @@ function NoiseGraphs({ stats }) {
                     {
                       label: "Count",
                       data: levelCounts,
-                      backgroundColor: ["#10b981", "#f59e0b", "#ef4444"],
+                      backgroundColor: levelColors,
                       borderRadius: 6,
                       borderWidth: 0,
                     },
