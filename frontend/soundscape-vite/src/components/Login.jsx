@@ -6,6 +6,8 @@ import { useToast } from "../hooks/use-toast";
 import { Eye, EyeOff, Volume2, BarChart3, MapPin, Shield, Lock } from "lucide-react";
 import Register from "./Register";
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+
 function Login({ setLoggedIn }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

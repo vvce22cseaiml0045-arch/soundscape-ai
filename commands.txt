@@ -1,13 +1,28 @@
-Backend
-python -m venv backend/myenv
-./backend/myenv/Scripts/activate ##activates virtual environment
-cd backend
-cd backend
-pip install -r requirements.txt //Not required all the time.
-uvicorn app:app
+# Soundscape AI - Quick Commands
 
-Frontend  
-cd frontend
-cd frontend
-npm install //Not required all the time
-npm start
+python -m venv backend/myenv
+
+# Windows
+./backend/myenv/Scripts/activate  
+# macOS/Linux
+source backend/myenv/bin/activate  
+
+cd backend/backend
+
+pip install -r requirements.txt
+
+uvicorn app:app --reload --host 0.0.0.0 --port 8000
+```
+
+## Frontend Setup & Run (Vite)
+
+cd frontend/soundscape-vite
+
+npm install
+# Create .env file (first time only)
+# Add these variables:
+# VITE_API_URL=http://localhost:8000
+# VITE_MAPBOX_ACCESS_TOKEN=your_mapbox_token_here
+ npm run dev
+
+

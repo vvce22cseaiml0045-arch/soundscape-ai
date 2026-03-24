@@ -11,13 +11,31 @@ Soundscape AI is a full-stack web application designed for analyzing audio to pr
 - **Dashboard Statistics**: Visual graphs showcasing different noise statistics over time.
 - **Prediction History**: A log of previous predictions fetched from the database.
 - **Secure Sessions**: User authentication with session expiration and secure local/session storage management.
-- **Modern UI/UX**: Built with React, featuring a responsive design, Framer Motion animations, and a seamless Dark/Light theme toggle.
+- **Modern UI/UX**: Built with **Vite + React**, featuring lightning-fast development, responsive design, Framer Motion animations, and seamless Dark/Light theme toggle.
+
+## Technology Stack
+
+### Frontend
+- **⚡ Vite** - Ultra-fast build tool and development server
+- **⚛️ React 19** - Modern React with latest features
+- **🎨 Tailwind CSS** - Utility-first CSS framework
+- **🎭 Framer Motion** - Smooth animations and transitions
+- **🗺️ Leaflet + React Leaflet** - Interactive maps
+- **📊 Chart.js** - Data visualization
+- **🎯 Radix UI** - Accessible component primitives
+
+### Backend
+- **🚀 FastAPI** - High-performance Python web framework
+- **🤖 TensorFlow** - Machine learning and CNN models
+- **🎵 Librosa** - Audio analysis and feature extraction
+- **📊 Scikit-learn** - Traditional ML algorithms
+- **🗄️ MongoDB** - NoSQL database for user data and predictions
 
 ## Details of Key Variables Used
 
-The core state management in the frontend (`App.js`) utilizes several key variables:
+The core state management in the frontend (`App.jsx`) utilizes several key variables:
 
-- `loggedIn` (Boolean): Tracks whether the current user is authenticated. Checks `localStorage` and `sessionStorage` for session active state and expiration (10 minutes).
+- `loggedIn` (Boolean): Tracks whether the current user is authenticated. Checks `localStorage` and `sessionStorage` for session active state and expiration (1 hour).
 - `activeSection` (String): Determines which component is currently rendered on the dashboard (e.g., `'upload'`, `'route'`, `'accuracy'`, `'stats'`, `'history'`, or `'all'`).
 - `sidebarCollapsed` (Boolean): Toggles the expansive/collapsed state of the navigation sidebar.
 - `showLogoutDialog` (Boolean): Controls the visibility of the logout confirmation modal.
@@ -31,14 +49,14 @@ The core state management in the frontend (`App.js`) utilizes several key variab
 ### Hardware Requirements
 - **Processor**: Multi-core processor (Intel i5/Ryzen 5 or better recommended for handling model inference).
 - **RAM**: Minimum 8 GB (16 GB recommended if training or analyzing large audio datasets).
-- **Storage**: Minimum 1-2 GB of free space for dependencies, models, and virtual environments.
+- **Storage**: Minimum 2-3 GB of free space for dependencies, models, and virtual environments.
 
 ### Software Requirements
 - **Operating System**: Windows (10/11), Linux, or macOS.
 - **Backend Environment**: Python 3.8 or higher.
-- **Frontend Environment**: Node.js (v14.0.0 or higher) and npm.
+- **Frontend Environment**: Node.js (v18.0.0 or higher) and npm.
 - **Key Python Libraries**: `fastapi`, `uvicorn`, `tensorflow` (>=2.15.0), `librosa`, `scikit-learn`, `pymongo`, `opencv-python-headless`.
-- **Database**: MongoDB (required for storing `stats` and `history`).
+- **Database**: MongoDB (local installation or MongoDB Atlas).
 
 ## Compiling and Running Procedure
 
@@ -51,53 +69,129 @@ Follow these steps to set up and run the Soundscape AI application locally.
    ```bash
    python -m venv backend/myenv
    ```
-3. Activate the virtual environment (Windows):
+3. Activate the virtual environment:
    ```bash
+   # Windows
    ./backend/myenv/Scripts/activate
+   
+   # macOS/Linux
+   source backend/myenv/bin/activate
    ```
-   *(For macOS/Linux, use `source backend/myenv/bin/activate`)*
 4. Navigate to the backend directory:
    ```bash
-   cd backend
+   cd backend/backend
    ```
 5. Install the required Python dependencies:
    ```bash
    pip install -r requirements.txt
    ```
-6. Start the FastAPI backend server using Uvicorn:
+6. Start the FastAPI backend server:
    ```bash
-   uvicorn app:app
+   # Method 1: Using the startup script (Windows)
+   start_backend.bat
+   
+   # Method 2: Using Python script
+   python start_backend.py
+   
+   # Method 3: Direct uvicorn command
+   uvicorn app:app --reload --host 0.0.0.0 --port 8000
    ```
-   *(The backend server will typically run on `http://localhost:8000`)*
+   *(The backend server will run on `http://localhost:8000`)*
 
-### 2. Frontend Setup
+### 2. Frontend Setup (Vite)
 
-1. Open a new terminal window and navigate to the frontend directory:
+1. Open a new terminal window and navigate to the Vite frontend directory:
    ```bash
-   cd frontend
-   cd frontend  # Note: Navigate to the inner frontend folder where package.json is located
+   cd frontend/soundscape-vite
    ```
 2. Install the necessary Node modules:
    ```bash
    npm install
    ```
-3. Start the React development server:
-   ```bash
-   npm start
+3. Create environment file (`.env`):
+   ```env
+   VITE_API_URL=http://localhost:8000
+   VITE_MAPBOX_ACCESS_TOKEN=your_mapbox_token_here
    ```
-   *(The frontend application will compile and open in your default browser, typically at `http://localhost:3000`)*
+4. Start the Vite development server:
+   ```bash
+   npm run dev
+   ```
+   *(The frontend application will start on `http://localhost:5173` or next available port)*
+
+### 3. Build for Production
+
+To create a production build of the frontend:
+```bash
+cd frontend/soundscape-vite
+npm run build
+```
+The built files will be in the `dist/` directory.
 
 ---
 
-### 3. Database Setup (MongoDB)
+### 4. Database Setup (MongoDB)
 
 Soundscape AI utilizes **MongoDB**, a flexible NoSQL database perfectly suited for capturing unstructured ML inference outputs, to persist all primary analytical data. The database plays a crucial role in:
-- **User Authentication**: Securely managing user profiles and login credentials to restrict dashboard access. When a new user registers, their initial account details are securely created and stored in the database.
-- **Prediction History**: Persisting raw analysis results such as inferred noise levels (`noise_level`), class confidences, and calculation timestamps, which are accessible through the `/history` endpoint.
-- **Aggregated Statistics**: Compiling distributions of noise categories over time. These metrics are dynamically queried by the frontend `/stats` endpoint to plot real-time pie and bar charts across the React dashboard.
+- **User Authentication**: Securely managing user profiles and login credentials to restrict dashboard access.
+- **Prediction History**: Persisting raw analysis results such as inferred noise levels (`noise_level`), class confidences, and calculation timestamps.
+- **Aggregated Statistics**: Compiling distributions of noise categories over time for real-time dashboard visualizations.
 
-To ensure the backend operates flawlessly:
-- Install [MongoDB Community Edition](https://www.mongodb.com/try/download/community) and ensure the MongoDB service is actively running (usually on default port `27017`), or update your connection string to point to MongoDB Atlas.
-- Your FastAPI backend leverages `pymongo` to seamlessly connect, write user data, and query historical statistics.
+#### Local MongoDB Setup:
+1. Install [MongoDB Community Edition](https://www.mongodb.com/try/download/community)
+2. Start MongoDB service (usually runs on port `27017`)
+3. The backend will automatically connect to `mongodb://localhost:27017`
 
-**Note**: Ensure your MongoDB instance is running locally or properly configured in your backend settings so that dashboard history and stats can be fetched and displayed without disruption.
+#### MongoDB Atlas Setup (Cloud):
+1. Create account at [MongoDB Atlas](https://mongodb.com/atlas)
+2. Create a free cluster
+3. Get connection string and update backend environment variables
+
+**Note**: Ensure your MongoDB instance is running and accessible for the backend to store user data and prediction history.
+
+## Environment Variables
+
+### Frontend (Vite)
+- `VITE_API_URL` - Backend API URL (default: `http://localhost:8000`)
+- `VITE_MAPBOX_ACCESS_TOKEN` - Mapbox token for route mapping features
+
+### Backend
+- `MONGODB_URI` - MongoDB connection string (optional, defaults to local)
+
+## Development vs Production
+
+### Development
+- **Frontend**: Vite dev server with hot reload (`npm run dev`)
+- **Backend**: FastAPI with auto-reload (`uvicorn app:app --reload`)
+- **Database**: Local MongoDB or MongoDB Atlas
+
+### Production Deployment
+- **Frontend**: Deploy to Vercel, Netlify, or similar (`npm run build`)
+- **Backend**: Deploy to Railway, Render, or cloud providers
+- **Database**: MongoDB Atlas (recommended for production)
+
+## Performance Benefits of Vite
+
+Compared to the previous Create React App setup:
+- ⚡ **5-10x faster development server startup**
+- 🔥 **Instant hot module replacement (HMR)**
+- 📦 **Smaller production bundles**
+- 🌳 **Better tree shaking**
+- 🛠️ **Modern ES modules support**
+
+## Quick Start Commands
+
+```bash
+# Backend
+cd backend/backend
+python start_backend.py
+
+# Frontend (new terminal)
+cd frontend/soundscape-vite
+npm run dev
+```
+
+Your app will be available at:
+- **Frontend**: `http://localhost:5173` (or next available port)
+- **Backend**: `http://localhost:8000`
+- **API Docs**: `http://localhost:8000/docs`

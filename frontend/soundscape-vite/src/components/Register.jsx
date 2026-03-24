@@ -5,6 +5,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/
 import { useToast } from "../hooks/use-toast";
 import { Eye, EyeOff, UserPlus, ArrowLeft } from "lucide-react";
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+
 function Register({ onBackToLogin, onRegisterSuccess }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

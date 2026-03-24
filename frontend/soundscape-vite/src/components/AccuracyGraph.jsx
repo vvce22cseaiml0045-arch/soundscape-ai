@@ -3,6 +3,8 @@ import { Bar } from "react-chartjs-2";
 import { BarChart3 } from "lucide-react";
 import { useTheme } from "../contexts/ThemeContext";
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+
 import {
   Chart as ChartJS,
   CategoryScale,

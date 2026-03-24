@@ -4,6 +4,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { useToast } from "../hooks/use-toast";
 import { Loader2, Headphones } from "lucide-react";
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+
 function UploadAudio({ setResult, setCNNData }) {
   const [mode, setMode] = useState("ml");
   const [isUploading, setIsUploading] = useState(false);

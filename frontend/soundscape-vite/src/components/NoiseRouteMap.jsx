@@ -6,7 +6,7 @@ import { Badge } from "./ui/badge";
 import { Route as RouteIcon, Navigation } from "lucide-react";
 import { useToast } from "../hooks/use-toast";
 
-const MAPBOX_TOKEN = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN;
+const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
 
 // Fallback coordinate if Geolocation fails (Mysuru)
 const DEFAULT_CENTER = [12.2958, 76.6394];

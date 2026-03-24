@@ -16,6 +16,8 @@ import ThemeToggle from "./components/ThemeToggle";
 import { Toaster } from "./components/ui/toaster";
 import { useToast } from "./hooks/use-toast";
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+
 function App() {
   const [loggedIn, setLoggedIn] = useState(() => {
     const loginTime = localStorage.getItem('soundscape_login_time');
@@ -98,14 +100,14 @@ function App() {
   const fetchData = useCallback(async () => {
     try {
       // Fetch stats
-      const statsRes = await fetch("http://localhost:8000/stats");
+      const statsRes = await fetch(`${API_URL}/stats`);
       if (statsRes.ok) {
         const statsData = await statsRes.json();
         setStats(statsData);
       }
 
       // Fetch history
-      const historyRes = await fetch("http://localhost:8000/history");
+      const historyRes = await fetch(`${API_URL}/history`);
       if (historyRes.ok) {
         const historyData = await historyRes.json();
         setHistory(historyData);
