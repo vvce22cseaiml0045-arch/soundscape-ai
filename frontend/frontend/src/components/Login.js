@@ -128,21 +128,21 @@ function Login({ setLoggedIn }) {
   ];
 
   return (
-    <div className="min-h-screen flex">
+    <div className="min-h-screen flex flex-col lg:flex-row">
       {/* Left Panel - Project Information */}
       <div 
         className={`relative transition-all duration-500 ease-in-out ${
-          isCollapsed ? 'w-0 overflow-hidden' : 'w-full lg:w-1/2'
+          isCollapsed ? 'hidden lg:w-0 lg:overflow-hidden' : 'w-full lg:w-1/2'
         } bg-gradient-to-br from-emerald-600 via-teal-600 to-green-700`}
       >
         
         <div className="relative z-10 h-full flex flex-col justify-center p-8 lg:p-12 text-white">
-          <div className="max-w-lg">
+          <div className="max-w-lg mx-auto lg:mx-0">
             <div className="mb-8">
-              <h1 className="text-4xl lg:text-5xl font-bold mb-4 leading-tight flex items-center gap-3">
+              <h1 className="text-4xl lg:text-5xl font-bold mb-4 leading-tight flex items-center gap-3 justify-center lg:justify-start">
                 <Volume2 className="w-10 h-10" /> Soundscape AI
               </h1>
-              <p className="text-xl lg:text-2xl text-emerald-100 font-light">
+              <p className="text-xl lg:text-2xl text-emerald-100 font-light text-center lg:text-left">
                 Intelligent Noise Classification & Urban Sound Analytics
               </p>
             </div>
@@ -165,7 +165,7 @@ function Login({ setLoggedIn }) {
             </div>
 
             <div className="mt-8 pt-6 border-t border-white/20">
-              <p className="text-sm text-emerald-200">
+              <p className="text-sm text-emerald-200 text-center lg:text-left">
                 Powered by advanced machine learning algorithms and real-time data processing
               </p>
             </div>
@@ -175,7 +175,7 @@ function Login({ setLoggedIn }) {
       </div>
 
       {/* Right Panel - Login Form */}
-      <div className={`flex items-center justify-center p-4 transition-all duration-500 ${
+      <div className={`flex items-center justify-center p-4 min-h-screen lg:min-h-0 transition-all duration-500 ${
         isCollapsed ? 'w-full' : 'w-full lg:w-1/2'
       } bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-900 dark:to-gray-800`}>
         
@@ -190,23 +190,24 @@ function Login({ setLoggedIn }) {
           </button>
         )}
 
-        {/* Show Register component if showRegister is true */}
-        {showRegister ? (
-          <Register 
-            onBackToLogin={() => setShowRegister(false)}
-            onRegisterSuccess={handleRegisterSuccess}
-          />
-        ) : (
-          <Card className="w-full max-w-md shadow-xl border-2 border-gray-200 dark:border-gray-700 bg-white/95 dark:bg-gray-800 backdrop-blur-sm">
-            <CardHeader className="text-center pb-2 bg-gray-50/50 dark:bg-gray-800 rounded-t-lg border-b border-gray-100 dark:border-gray-700">
-              <CardTitle className="text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center justify-center gap-2">
-                <Lock className="w-6 h-6 text-gray-900 dark:text-gray-100" /> Welcome Back
-              </CardTitle>
-              <CardDescription className="text-gray-600 dark:text-gray-400">
-                Sign in to access your Soundscape AI Dashboard
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4 pt-4 bg-white dark:bg-gray-800 rounded-b-lg">
+        <div className="w-full max-w-md mx-auto">
+          {/* Show Register component if showRegister is true */}
+          {showRegister ? (
+            <Register 
+              onBackToLogin={() => setShowRegister(false)}
+              onRegisterSuccess={handleRegisterSuccess}
+            />
+          ) : (
+            <Card className="w-full shadow-xl border-2 border-gray-200 dark:border-gray-700 bg-white/95 dark:bg-gray-800 backdrop-blur-sm">
+              <CardHeader className="text-center pb-2 bg-gray-50/50 dark:bg-gray-800 rounded-t-lg border-b border-gray-100 dark:border-gray-700">
+                <CardTitle className="text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center justify-center gap-2">
+                  <Lock className="w-6 h-6 text-gray-900 dark:text-gray-100" /> Welcome Back
+                </CardTitle>
+                <CardDescription className="text-gray-600 dark:text-gray-400">
+                  Sign in to access your Soundscape AI Dashboard
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4 pt-4 bg-white dark:bg-gray-800 rounded-b-lg">
               <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Email Address</label>
                 <Input
@@ -276,6 +277,7 @@ function Login({ setLoggedIn }) {
             </CardContent>
           </Card>
         )}
+        </div>
       </div>
     </div>
   );
