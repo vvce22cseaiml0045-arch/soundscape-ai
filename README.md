@@ -137,16 +137,6 @@ Soundscape AI utilizes **MongoDB**, a flexible NoSQL database perfectly suited f
 - **Prediction History**: Persisting raw analysis results such as inferred noise levels (`noise_level`), class confidences, and calculation timestamps.
 - **Aggregated Statistics**: Compiling distributions of noise categories over time for real-time dashboard visualizations.
 
-#### Local MongoDB Setup:
-1. Install [MongoDB Community Edition](https://www.mongodb.com/try/download/community)
-2. Start MongoDB service (usually runs on port `27017`)
-3. The backend will automatically connect to `mongodb://localhost:27017`
-
-#### MongoDB Atlas Setup (Cloud):
-1. Create account at [MongoDB Atlas](https://mongodb.com/atlas)
-2. Create a free cluster
-3. Get connection string and update backend environment variables
-
 **Note**: Ensure your MongoDB instance is running and accessible for the backend to store user data and prediction history.
 
 ## Environment Variables
@@ -155,43 +145,4 @@ Soundscape AI utilizes **MongoDB**, a flexible NoSQL database perfectly suited f
 - `VITE_API_URL` - Backend API URL (default: `http://localhost:8000`)
 - `VITE_MAPBOX_ACCESS_TOKEN` - Mapbox token for route mapping features
 
-### Backend
-- `MONGODB_URI` - MongoDB connection string (optional, defaults to local)
 
-## Development vs Production
-
-### Development
-- **Frontend**: Vite dev server with hot reload (`npm run dev`)
-- **Backend**: FastAPI with auto-reload (`uvicorn app:app --reload`)
-- **Database**: Local MongoDB or MongoDB Atlas
-
-### Production Deployment
-- **Frontend**: Deploy to Vercel, Netlify, or similar (`npm run build`)
-- **Backend**: Deploy to Railway, Render, or cloud providers
-- **Database**: MongoDB Atlas (recommended for production)
-
-## Performance Benefits of Vite
-
-Compared to the previous Create React App setup:
-- ⚡ **5-10x faster development server startup**
-- 🔥 **Instant hot module replacement (HMR)**
-- 📦 **Smaller production bundles**
-- 🌳 **Better tree shaking**
-- 🛠️ **Modern ES modules support**
-
-## Quick Start Commands
-
-```bash
-# Backend
-cd backend/backend
-python start_backend.py
-
-# Frontend (new terminal)
-cd frontend/soundscape-vite
-npm run dev
-```
-
-Your app will be available at:
-- **Frontend**: `http://localhost:5173` (or next available port)
-- **Backend**: `http://localhost:8000`
-- **API Docs**: `http://localhost:8000/docs`
