@@ -133,9 +133,7 @@ function Login({ setLoggedIn }) {
     <div className="min-h-screen flex flex-col lg:flex-row">
       {/* Left Panel - Project Information */}
       <div 
-        className={`relative transition-all duration-500 ease-in-out ${
-          isCollapsed ? 'hidden lg:w-0 lg:overflow-hidden' : 'w-full lg:w-1/2'
-        } bg-gradient-to-br from-emerald-600 via-teal-600 to-green-700`}
+        className="relative hidden lg:flex lg:w-1/2 bg-gradient-to-br from-emerald-600 via-teal-600 to-green-700"
       >
         
         <div className="relative z-10 h-full flex flex-col justify-center p-8 lg:p-12 text-white">
@@ -177,9 +175,7 @@ function Login({ setLoggedIn }) {
       </div>
 
       {/* Right Panel - Login Form */}
-      <div className={`flex items-center justify-center p-4 min-h-screen lg:min-h-0 transition-all duration-500 ${
-        isCollapsed ? 'w-full' : 'w-full lg:w-1/2'
-      } bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-900 dark:to-gray-800`}>
+      <div className="flex-1 flex items-center justify-center p-4 min-h-screen lg:min-h-0 w-full lg:w-1/2 bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-900 dark:to-gray-800">
         
         {/* Show expand button when panel is collapsed on larger screens */}
         {isCollapsed && (

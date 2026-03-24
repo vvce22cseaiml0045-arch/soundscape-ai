@@ -159,6 +159,21 @@ function App() {
     localStorage.setItem('soundscape_active_section', activeSection);
   }, [activeSection]);
 
+  // Handle responsive sidebar behavior
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 1024) {
+        setSidebarCollapsed(true);
+      }
+    };
+
+    // Set initial state
+    handleResize();
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   /* LOGIN */
   if (!loggedIn) {
     return (
