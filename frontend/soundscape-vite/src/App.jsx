@@ -275,7 +275,9 @@ function App() {
 
             {/* Accuracy Comparison */}
             {(activeSection === "accuracy" || activeSection === "all") && (
-              <AccuracyGraph />
+              <div className="lg:col-span-2">
+                <AccuracyGraph />
+              </div>
             )}
 
             {/* Stats */}

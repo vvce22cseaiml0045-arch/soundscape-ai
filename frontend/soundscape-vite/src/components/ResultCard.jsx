@@ -81,7 +81,7 @@ function ResultCard({ result, onClear }) {
               className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-red-600 bg-red-50 hover:bg-red-100 dark:text-red-400 dark:bg-red-900/20 dark:hover:bg-red-900/40 rounded-md transition-colors border border-red-200 dark:border-red-800 border-opacity-50"
               title="Clear analysis and upload new file"
             >
-            Clear Analysis
+            Clear
             </button>
           )}
         </div>
