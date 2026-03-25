@@ -226,63 +226,7 @@ function NoiseRouteMap({ noiseLevel = "Low", hasAnalysis = true }) {
           </span>
         )}
       </div>
-
-      <div className="p-4 sm:p-6 space-y-4 bg-gray-50/30 dark:bg-slate-800 rounded-b-lg relative">
-        <div style={{ width: "100%", height: "calc(100vh - 200px)", borderRadius: "12px", overflow: "hidden" }}>
-          <MapContainer
-            center={currentLocation}
-            zoom={14}
-            style={{ width: "100%", height: "100%" }}
-            ref={mapRef}
-          >
-            <TileLayer
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
-
-            <MapClickHandler onClick={onMapClick} />
-            <MapRecenter center={currentLocation} isAutoCenter={isAutoCenter} />
-
-            {/* User's Current Location */}
-            <Marker position={currentLocation} icon={youIcon}>
-              <Popup>Your current location</Popup>
-            </Marker>
-
-            {/* Destination */}
-            {destination && (
-              <Marker position={destination} icon={destIcon}>
-                <Popup>Destination</Popup>
-              </Marker>
-            )}
-
-            {/* Route Polyline */}
-            {routePath.length > 0 && (
-              <Polyline
-                positions={routePath}
-                pathOptions={{
-                  color: ROUTE_COLOR[noiseLevel] || ROUTE_COLOR.Low,
-                  weight: 6,
-                  opacity: 0.8,
-                }}
-              />
-            )}
-          </MapContainer>
-
-          {/* Recenter Button */}
-          <button
-            onClick={() => {
-              setIsAutoCenter(true);
-              // Small timeout to allow state to trigger flyTo if already true but needs fresh trigger
-              setTimeout(() => setIsAutoCenter(true), 10);
-            }}
-            className="absolute bottom-28 right-8 z-[1000] p-3 bg-white dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-full shadow-lg hover:bg-gray-50 dark:hover:bg-slate-600 transition-all group"
-            title="Recenter Map"
-          >
-            <Navigation className={`w-5 h-5 ${isAutoCenter ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-500 dark:text-gray-400'}`} />
-          </button>
-        </div>
-
-        {/* Status Indicator */}
+       {/* Status Indicator */}
         <div className="flex flex-col sm:flex-row items-center justify-between p-4 bg-gray-100 dark:bg-slate-700 rounded-lg border border-gray-200 dark:border-slate-600 gap-3">
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 w-full sm:w-auto">
             {!hasAnalysis ? (
@@ -327,6 +271,50 @@ function NoiseRouteMap({ noiseLevel = "Low", hasAnalysis = true }) {
             )}
           </div>
         </div>
+
+      <div className="p-4 sm:p-6 space-y-4 bg-gray-50/30 dark:bg-slate-800 rounded-b-lg relative">
+        <div style={{ width: "100%", height: "calc(100vh - 200px)", borderRadius: "12px", overflow: "hidden" }}>
+          <MapContainer
+            center={currentLocation}
+            zoom={14}
+            style={{ width: "100%", height: "100%" }}
+            ref={mapRef}
+          >
+            <TileLayer
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+
+            <MapClickHandler onClick={onMapClick} />
+            <MapRecenter center={currentLocation} isAutoCenter={isAutoCenter} />
+
+            {/* User's Current Location */}
+            <Marker position={currentLocation} icon={youIcon}>
+              <Popup>Your current location</Popup>
+            </Marker>
+
+            {/* Destination */}
+            {destination && (
+              <Marker position={destination} icon={destIcon}>
+                <Popup>Destination</Popup>
+              </Marker>
+            )}
+
+            {/* Route Polyline */}
+            {routePath.length > 0 && (
+              <Polyline
+                positions={routePath}
+                pathOptions={{
+                  color: ROUTE_COLOR[noiseLevel] || ROUTE_COLOR.Low,
+                  weight: 6,
+                  opacity: 0.8,
+                }}
+              />
+            )}
+          </MapContainer>
+        </div>
+
+       
       </div>
     </div>
   );

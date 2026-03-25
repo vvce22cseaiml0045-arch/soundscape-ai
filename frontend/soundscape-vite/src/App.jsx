@@ -48,9 +48,30 @@ function App() {
   });
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
+  const [fileInputKey, setFileInputKey] = useState(0);
 
-  const [result, setResult] = useState(null);       // ML / Hybrid
-  const [cnnData, setCNNData] = useState(null);     // CNN explainability
+  const [result, setResult] = useState(() => {
+    try {
+      const saved = sessionStorage.getItem('soundscape_analysis_result');
+      return saved ? JSON.parse(saved) : null;
+    } catch { return null; }
+  });
+  const [cnnData, setCNNData] = useState(() => {
+    try {
+      const saved = sessionStorage.getItem('soundscape_analysis_cnn');
+      return saved ? JSON.parse(saved) : null;
+    } catch { return null; }
+  });
+
+  useEffect(() => {
+    if (result) sessionStorage.setItem('soundscape_analysis_result', JSON.stringify(result));
+    else sessionStorage.removeItem('soundscape_analysis_result');
+  }, [result]);
+
+  useEffect(() => {
+    if (cnnData) sessionStorage.setItem('soundscape_analysis_cnn', JSON.stringify(cnnData));
+    else sessionStorage.removeItem('soundscape_analysis_cnn');
+  }, [cnnData]);
 
   const [stats, setStats] = useState(null);
   const [history, setHistory] = useState([]);
@@ -221,10 +242,19 @@ function App() {
             {(activeSection === "upload" || activeSection === "all") && (
               <div className="lg:col-span-2 space-y-6">
                 <UploadAudio
+                  fileInputKey={fileInputKey}
+                  currentFileName={result?.fileName || cnnData?.fileName}
                   setResult={setResult}
                   setCNNData={setCNNData}
                 />
-                <ResultCard result={result || cnnData} />
+                <ResultCard 
+                  result={result || cnnData} 
+                  onClear={() => {
+                    setResult(null);
+                    setCNNData(null);
+                    setFileInputKey(prev => prev + 1);
+                  }}
+                />
               </div>
             )}
 

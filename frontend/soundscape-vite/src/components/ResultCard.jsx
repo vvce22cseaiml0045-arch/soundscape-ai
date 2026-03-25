@@ -1,12 +1,12 @@
 import { motion } from "framer-motion";
 import { Badge } from "./ui/badge";
 import { Progress } from "./ui/progress";
-import { Search, Volume2, Target, VolumeX, BarChart3, Music, CheckCircle, AlertTriangle, AlertCircle } from "lucide-react";
+import { Search, Volume2, Target, VolumeX, BarChart3, Music, CheckCircle, AlertTriangle, AlertCircle, XCircle } from "lucide-react";
 import { formatNoiseType } from "../utils/formatNoiseType";
 
 // Function to format noise type from class name to readable text
 
-function ResultCard({ result }) {
+function ResultCard({ result, onClear }) {
   if (!result) return null;
 
   // Noise type
@@ -64,10 +64,26 @@ function ResultCard({ result }) {
       animate={{ opacity: 1, y: 0 }}
     >
       <div className="bg-white dark:bg-slate-800 shadow-lg border border-gray-200 dark:border-slate-700 rounded-lg">
-        <div className="pb-4 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-t-lg px-6 py-4 border-b border-gray-100 dark:border-slate-700">
-          <h3 className="flex items-center gap-2 text-gray-800 dark:text-gray-100 text-lg font-semibold">
-            <Search className="w-5 h-5 text-emerald-600 dark:text-emerald-400" /> Noise Analysis Result
+        <div className="pb-4 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-t-lg px-6 py-4 border-b border-gray-100 dark:border-slate-700 flex justify-between items-center">
+          <h3 className="flex flex-wrap items-center gap-2 text-gray-800 dark:text-gray-100 text-lg font-semibold">
+            <div className="flex items-center gap-2">
+              <Search className="w-5 h-5 text-emerald-600 dark:text-emerald-400" /> Noise Analysis Result
+            </div>
+            {result.fileName && (
+              <span className="text-sm font-normal text-gray-500 dark:text-gray-400 bg-white/50 dark:bg-slate-800/50 px-2 py-0.5 rounded-full border border-gray-200 dark:border-slate-600">
+                {result.fileName}
+              </span>
+            )}
           </h3>
+          {onClear && (
+            <button
+              onClick={onClear}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-red-600 bg-red-50 hover:bg-red-100 dark:text-red-400 dark:bg-red-900/20 dark:hover:bg-red-900/40 rounded-md transition-colors border border-red-200 dark:border-red-800 border-opacity-50"
+              title="Clear analysis and upload new file"
+            >
+            Clear Analysis
+            </button>
+          )}
         </div>
         <div className="p-6 space-y-6 bg-gray-50/30 dark:bg-slate-800 rounded-b-lg">
           {/* Sound Type */}

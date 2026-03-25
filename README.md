@@ -142,7 +142,6 @@ Soundscape AI utilizes **MongoDB**, a flexible NoSQL database perfectly suited f
 ## Environment Variables
 
 ### Frontend (Vite)
-- `VITE_API_URL` - Backend API URL (default: `http://localhost:8000`)
 - `VITE_MAPBOX_ACCESS_TOKEN` - Mapbox token for route mapping features
 
 

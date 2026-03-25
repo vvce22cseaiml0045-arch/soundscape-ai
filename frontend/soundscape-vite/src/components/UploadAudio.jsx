@@ -6,14 +6,20 @@ import { Loader2, Headphones } from "lucide-react";
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
-function UploadAudio({ setResult, setCNNData }) {
+function UploadAudio({ setResult, setCNNData, fileInputKey, currentFileName }) {
   const [mode, setMode] = useState("ml");
   const [isUploading, setIsUploading] = useState(false);
+  const [localFileName, setLocalFileName] = useState("");
   const { toast } = useToast();
+
+  React.useEffect(() => {
+    setLocalFileName("");
+  }, [fileInputKey]);
 
   const handleUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
+    setLocalFileName(file.name);
 
     // Validate file type
     if (!file.type.startsWith('audio/')) {
@@ -58,6 +64,7 @@ function UploadAudio({ setResult, setCNNData }) {
       }
 
       const data = await res.json();
+      data.fileName = file.name;
 
       if (mode === "cnn") {
         setCNNData(data);
@@ -81,8 +88,6 @@ function UploadAudio({ setResult, setCNNData }) {
       });
     } finally {
       setIsUploading(false);
-      // Clear the input so the same file can be uploaded again
-      e.target.value = '';
     }
   };
 
@@ -111,13 +116,22 @@ function UploadAudio({ setResult, setCNNData }) {
         <div className="space-y-2">
           <label className="text-sm font-medium text-gray-700 dark:text-gray-200">Upload Audio File</label>
           <div className="relative">
-            <Input 
-              type="file" 
-              accept="audio/*" 
-              onChange={handleUpload}
-              disabled={isUploading}
-              className="cursor-pointer bg-white dark:bg-slate-700 border-gray-300 dark:border-slate-600"
-            />
+            <div className={`flex items-center w-full min-h-[40px] border border-gray-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-700 overflow-hidden transition-colors ${isUploading ? 'opacity-50 cursor-not-allowed' : ''}`}>
+              <label className={`cursor-pointer h-full min-h-[40px] flex items-center justify-center px-4 border-r border-gray-300 dark:border-slate-600 bg-emerald-50 dark:bg-emerald-900/30 text-sm font-semibold text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-800/50 transition-colors shrink-0 ${isUploading ? 'pointer-events-none' : ''}`}>
+                Choose File
+                <input 
+                  key={fileInputKey}
+                  type="file" 
+                  accept="audio/*" 
+                  onChange={handleUpload}
+                  disabled={isUploading}
+                  className="hidden"
+                />
+              </label>
+              <span className="px-4 py-2 text-sm text-gray-600 dark:text-gray-300 truncate w-full">
+                {localFileName || currentFileName || "No file chosen"}
+              </span>
+            </div>
             {isUploading && (
               <div className="absolute inset-0 bg-white/90 dark:bg-slate-800/80 flex items-center justify-center rounded-md">
                 <div className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
