@@ -116,11 +116,12 @@ function ResultCard({ result, onClear }) {
           {/* Health Impact */}
           <div className="space-y-2">
             <span className="text-sm font-medium flex items-center gap-2 text-gray-700 dark:text-gray-200">
-              {getHealthIcon(level)} Health Impact :
-            </span>
-            <p className="text-sm text-gray-700 dark:text-muted-foreground bg-gray-100 dark:bg-slate-700 p-3 rounded-md flex items-center gap-2 border border-gray-200 dark:border-slate-600">
+              {getHealthIcon(level)} Health Impact :    <p className="text-sm text-gray-700 dark:text-muted-foreground bg-gray-100 dark:bg-slate-700 p-3 rounded-md flex items-center gap-2 border border-gray-200 dark:border-slate-600">
               {healthMessage}
             </p>
+          </span>
+          
+           
           </div>
 
           {/* Confidence */}

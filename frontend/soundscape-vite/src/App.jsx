@@ -233,9 +233,11 @@ function App() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
         >
-          <h2 className="text-3xl font-bold text-center mb-6 flex items-center justify-center gap-3 text-gray-800 dark:text-gray-100">
-            <Volume2 className="w-8 h-8 text-emerald-600 dark:text-emerald-400" /> Soundscape AI Dashboard
-          </h2>
+          {activeSection !== "route" && (
+            <h2 className="text-3xl font-bold text-center mb-6 flex items-center justify-center gap-3 text-gray-800 dark:text-gray-100">
+              <Volume2 className="w-8 h-8 text-emerald-600 dark:text-emerald-400" /> Soundscape AI Dashboard
+            </h2>
+          )}
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Upload + Result */}
