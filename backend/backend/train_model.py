@@ -49,8 +49,10 @@ X_train, X_test, y_train, y_test = train_test_split(
 model = RandomForestClassifier(n_estimators=100)
 model.fit(X_train, y_train)
 
+accuracy = model.score(X_test, y_test)
+
 # Save model & encoder
 joblib.dump(model, "model/noise_model.pkl")
 joblib.dump(encoder, "model/label_encoder.pkl")
 
-print("✅ Model trained and saved successfully")
+print(f"✅ Model trained and saved successfully with accuracy: {accuracy * 100:.2f}%")

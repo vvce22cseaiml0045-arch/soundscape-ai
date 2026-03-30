@@ -44,10 +44,10 @@ cnn_model(dummy_input)
 print(cnn_model.input_shape)
 
 # ---------------- ACCURACY VALUES ----------------
-ML_ACCURACY = 89.3
-CNN_ACCURACY = 93.8
+ML_ACCURACY = 89.87
+CNN_ACCURACY = 85.15
 HYBRID_ACCURACY = 95.2
-
+ 
 # ---------------- CONSTANTS ----------------
 NOISE_LEVEL = {
     "air_conditioner": "Low",
