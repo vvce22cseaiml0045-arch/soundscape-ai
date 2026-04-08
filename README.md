@@ -110,7 +110,6 @@ Follow these steps to set up and run the Soundscape AI application locally.
    ```
 3. Create environment file (`.env`):
    ```env
-   VITE_API_URL=http://localhost:8000
    VITE_MAPBOX_ACCESS_TOKEN=your_mapbox_token_here
    ```
 4. Start the Vite development server:
