@@ -42,7 +42,7 @@ function UploadAudio({ setResult, setCNNData, fileInputKey, currentFileName }) {
     }
 
     setIsUploading(true);
-    
+
     try {
       const formData = new FormData();
       formData.append("file", file);
@@ -51,8 +51,8 @@ function UploadAudio({ setResult, setCNNData, fileInputKey, currentFileName }) {
         mode === "cnn"
           ? "http://127.0.0.1:8000/predict_cnn"
           : mode === "hybrid"
-          ? "http://127.0.0.1:8000/predict_hybrid"
-          : "http://127.0.0.1:8000/predict";
+            ? "http://127.0.0.1:8000/predict_hybrid"
+            : "http://127.0.0.1:8000/predict";
 
       const res = await fetch(url, {
         method: "POST",
@@ -60,7 +60,8 @@ function UploadAudio({ setResult, setCNNData, fileInputKey, currentFileName }) {
       });
 
       if (!res.ok) {
-        throw new Error(`Server error: ${res.status}`);
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.detail || `Server error: ${res.status}`);
       }
 
       const data = await res.json();
@@ -84,7 +85,7 @@ function UploadAudio({ setResult, setCNNData, fileInputKey, currentFileName }) {
       toast({
         variant: "destructive",
         title: "Analysis Failed",
-        description: "Unable to process the audio file. Please check if the backend is running and try again.",
+        description: error.message || "Unable to process the audio file. Please check if the backend is running and try again.",
       });
     } finally {
       setIsUploading(false);
@@ -112,17 +113,17 @@ function UploadAudio({ setResult, setCNNData, fileInputKey, currentFileName }) {
             </SelectContent>
           </Select>
         </div>
-        
+
         <div className="space-y-2">
           <label className="text-sm font-medium text-gray-700 dark:text-gray-200">Upload Audio File</label>
           <div className="relative">
             <div className={`flex items-center w-full min-h-[40px] border border-gray-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-700 overflow-hidden transition-colors ${isUploading ? 'opacity-50 cursor-not-allowed' : ''}`}>
               <label className={`cursor-pointer h-full min-h-[40px] flex items-center justify-center px-4 border-r border-gray-300 dark:border-slate-600 bg-emerald-50 dark:bg-emerald-900/30 text-sm font-semibold text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-800/50 transition-colors shrink-0 ${isUploading ? 'pointer-events-none' : ''}`}>
                 Choose File
-                <input 
+                <input
                   key={fileInputKey}
-                  type="file" 
-                  accept="audio/*" 
+                  type="file"
+                  accept="audio/*"
                   onChange={handleUpload}
                   disabled={isUploading}
                   className="hidden"
@@ -142,7 +143,7 @@ function UploadAudio({ setResult, setCNNData, fileInputKey, currentFileName }) {
             )}
           </div>
           <p className="text-xs text-gray-500 dark:text-gray-400">
-            Supported formats: WAV, MP3, M4A, etc. Max size: 10MB
+            Supported formats: WAV or MP3 Max size: 10MB
           </p>
         </div>
       </div>

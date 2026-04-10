@@ -119,6 +119,10 @@ async def predict(file: UploadFile = File(...)):
         f.write(await file.read())
 
     features = extract_features(temp)
+    if features is None:
+        os.remove(temp)
+        raise HTTPException(status_code=400, detail="Could not extract features. Ensure the file is a valid .wav or .mp3. For .m4a support, FFmpeg must be installed on your system.")
+        
     pred = ml_model.predict([features])[0]
     pred_proba = ml_model.predict_proba([features])[0]
     confidence = round(float(np.max(pred_proba)) * 100, 2)
@@ -345,6 +349,10 @@ async def predict_hybrid(file: UploadFile = File(...)):
 
     # -------- ML --------
     features = extract_features(temp)
+    if features is None:
+        os.remove(temp)
+        raise HTTPException(status_code=400, detail="Could not extract features. Ensure the file is a valid .wav or .mp3. For .m4a support, FFmpeg must be installed on your system.")
+
     ml_pred = ml_model.predict([features])[0]
     ml_label = str(encoder.inverse_transform([ml_pred])[0])
     ml_level = NOISE_LEVEL.get(ml_label, "Unknown")
