@@ -19,8 +19,8 @@ print("Loading saved models...")
 try:
     ml_model = joblib.load("model/noise_model.pkl")
     encoder = joblib.load("model/label_encoder.pkl")
-    cnn_model = tf.keras.models.load_model("cnn_noise_model.h5")
-    cnn_classes = np.load("cnn_classes.npy", allow_pickle=True)
+    cnn_model = tf.keras.models.load_model("model/cnn_noise_model.h5")
+    cnn_classes = np.load("model/cnn_classes.npy", allow_pickle=True)
 except Exception as e:
     print(f"Error loading models. Make sure they are trained first. ({e})")
     exit(1)
@@ -62,9 +62,6 @@ _, test_df = train_test_split(valid_df, test_size=0.3, random_state=42)
 LIMIT = 200 
 eval_df = test_df.sample(n=min(LIMIT, len(test_df)), random_state=42)
 
-print(f"\nEvaluating performance on {len(eval_df)} unseen test samples...")
-print("This may take a minute or two as we process audio features...\n")
-
 correct_hybrid = 0
 correct_cnn = 0
 correct_ml = 0
@@ -104,12 +101,5 @@ for idx, row in eval_df.iterrows():
     if total % 20 == 0:
         print(f"Processed {total}/{len(eval_df)} files...")
 
-print("\n" + "="*40)
-print("             RESULTS              ")
-print("="*40)
-print(f"ML Accuracy:      {(correct_ml / total) * 100:.2f}%")
-print(f"CNN Accuracy:     {(correct_cnn / total) * 100:.2f}%")
 print(f"HYBRID Accuracy:  {(correct_hybrid / total) * 100:.2f}%")
-print("="*40)
-print("\nYou can now update the ML_ACCURACY, CNN_ACCURACY, and HYBRID_ACCURACY")
-print("variables at the top of app.py with these values!")
+

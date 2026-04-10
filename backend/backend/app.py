@@ -45,8 +45,8 @@ print(cnn_model.input_shape)
 
 # ---------------- ACCURACY VALUES ----------------
 ML_ACCURACY = 89.87
-CNN_ACCURACY = 85.15
-HYBRID_ACCURACY = 95.2
+CNN_ACCURACY = 88.36
+HYBRID_ACCURACY = 86.5
  
 # ---------------- CONSTANTS ----------------
 NOISE_LEVEL = {

@@ -61,7 +61,7 @@ encoder = LabelEncoder()
 y_enc = encoder.fit_transform(y)
 y_cat = to_categorical(y_enc)
 
-np.save("cnn_classes.npy", encoder.classes_)
+np.save("model/cnn_classes.npy", encoder.classes_)
 
 X_train, X_test, y_train, y_test = train_test_split(
     X, y_cat, test_size=0.3, random_state=42
@@ -94,7 +94,7 @@ print("🚀 Training CNN...")
 model.fit(
     X_train,
     y_train,
-    epochs=35,
+    epochs=40,
     batch_size=32,
     validation_data=(X_test, y_test)
 )
