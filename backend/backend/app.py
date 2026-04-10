@@ -11,7 +11,7 @@ import librosa.display
 
 
 from ml.feature_extraction import extract_features
-from db import users, predictions
+from db import users, predictions, db
 from cnn.gradcam import generate_gradcam
 
 # ---------------- PATH SETUP ----------------
